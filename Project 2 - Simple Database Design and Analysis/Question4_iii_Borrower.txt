@@ -1,0 +1,21 @@
+drop table Book, User, Borrows;
+
+CREATE TABLE Book (
+Book_id int PRIMARY KEY,
+Book_name nvarchar(20)
+);
+
+CREATE TABLE User (
+User_id int PRIMARY KEY,
+User_name nvarchar(20)
+);
+
+CREATE TABLE Borrows (
+User_id int,
+Book_id int,
+PRIMARY KEY (User_id, Book_id),
+FOREIGN KEY (User_id) REFERENCES User(User_id),
+FOREIGN KEY (Book_id) REFERENCES Book(Book_id)
+);
+
+

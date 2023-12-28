@@ -1,0 +1,115 @@
+---------------------------------------------------------------------
+-- Question 1 ii 
+-- Write SQL script that generates all tables for your designed database
+---------------------------------------------------------------------
+drop TABLE Product_Quantity, Orders, Buyer, Merchandise;
+
+
+CREATE TABLE Merchandise (
+Item_id int PRIMARY KEY,
+Item_name nvarchar(20),
+Price nvarchar(20)
+);
+
+
+CREATE TABLE Buyer (
+Buyer_id int PRIMARY KEY,
+Buyer_name nvarchar(20)
+);
+
+
+CREATE TABLE Orders (
+Order_id int PRIMARY KEY,
+Date date,
+Buyer_id int,
+FOREIGN KEY (Buyer_id) REFERENCES Buyer(Buyer_id),
+);
+
+
+CREATE TABLE Product_Quantity (
+Order_id int,
+Item_id int,
+Quantity int,
+PRIMARY KEY (Order_id, Item_id),
+FOREIGN KEY (Order_id) REFERENCES Orders(Order_id),
+FOREIGN KEY (Item_id) REFERENCES Merchandise(Item_id)
+);
+
+-------------------------------------------------------------------------------
+-- Question 1.iv 
+-- Insert sufficient records to tables. Each should contain no less than 3 records. At least 2 orders should each contain 2 or more items of the ordered merchandise
+--------------------------------------------------------------------------------
+
+-- Merchandise
+INSERT INTO Merchandise VALUES (1, 'Acoustic Piano', 1000);
+INSERT INTO Merchandise VALUES (2, 'Electric Piano', 500);
+INSERT INTO Merchandise VALUES (3, 'Grand Piano', 5000);
+INSERT INTO Merchandise VALUES (4, 'Violin', 800);
+INSERT INTO Merchandise VALUES (5, 'Electric Guitar', 1200);
+INSERT INTO Merchandise VALUES (6, 'Acoustic Guitar', 500);
+INSERT INTO Merchandise VALUES (7, 'Banjo', 700);
+
+-- Buyer
+INSERT INTO Buyer VALUES (1,'Khazan Dong Nguyen');
+INSERT INTO Buyer VALUES (2,'Rakha Adam');
+INSERT INTO Buyer VALUES (3,'Aws Alzuhairi');
+INSERT INTO Buyer VALUES (4,'Calvin Tran Nguyen');
+INSERT INTO Buyer VALUES (5,'Linh Bui');
+INSERT INTO Buyer VALUES (6,'Ali Alwan');
+INSERT INTO Buyer VALUES (7,'Cherry Ku');
+
+-- Order
+INSERT INTO Orders VALUES (1, '2023-07-02', 1);
+INSERT INTO Orders VALUES (2, '2023-07-02', 1);
+INSERT INTO Orders VALUES (3, '2023-07-02', 2);
+INSERT INTO Orders VALUES (4, '2023-07-02', 4);
+
+-- Product_Quantity
+INSERT INTO Product_Quantity VALUES (1, 1, 3)
+INSERT INTO Product_Quantity VALUES (1, 2, 3)
+INSERT INTO Product_Quantity VALUES (1, 3, 4)
+INSERT INTO Product_Quantity VALUES (2, 5, 5)
+INSERT INTO Product_Quantity VALUES (2, 1, 4)
+INSERT INTO Product_Quantity VALUES (2, 3, 3)
+INSERT INTO Product_Quantity VALUES (3, 4, 5)
+INSERT INTO Product_Quantity VALUES (3, 3, 3)
+INSERT INTO Product_Quantity VALUES (3, 7, 1)
+INSERT INTO Product_Quantity VALUES (4, 1, 1)
+INSERT INTO Product_Quantity VALUES (4, 2, 4)
+INSERT INTO Product_Quantity VALUES (4, 5, 2)
+-- Screenshot are required for each TABLE RECORD
+
+SELECT * FROM Merchandise;
+SELECT * FROM Buyer;
+SELECT * FROM Orders;
+SELECT * FROM Product_Quantity;
+
+
+
+------------------------------------------------------------------------------
+-- Question 1.v:
+-- select Buyers whose last name corresponds to my family name 'Nguyen'
+------------------------------------------------------------------------------
+SELECT Buyer_name
+FROM Buyer 
+WHERE Buyer.Buyer_name LIKE '%Nguyen';
+
+
+
+-----------------------------------------------------------------------------
+-- Question 1.vi:
+-- Select order and list the item names and their corresponding prices
+-----------------------------------------------------------------------------
+SELECT Orders.Order_id, Merchandise.Item_name, Merchandise.Price
+FROM Orders
+	RIGHT JOIN (Product_Quantity INNER JOIN Merchandise ON Product_Quantity.Item_id = Merchandise.Item_id) 
+	ON Orders.Order_id = Product_Quantity.Order_id;
+
+
+
+-----------------------------------------------------------------------------
+-- Question 1.vii:
+-- List all the orders by their order number, date and the name of the buyer who places that order
+-----------------------------------------------------------------------------
+SELECT Orders.Order_id, Orders.Date, Buyer.Buyer_name
+FROM Orders INNER JOIN Buyer ON Orders.Buyer_id = Buyer.Buyer_id;

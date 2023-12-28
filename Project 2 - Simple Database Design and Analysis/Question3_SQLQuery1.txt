@@ -1,0 +1,137 @@
+-----------------------------------------------------------------------------
+-- Question 3.i 
+-- Design a minimum database
+-----------------------------------------------------------------------------
+drop TABLE  Performance_Assignment, Specialty_Assignment, Competition_Assignment, Swimmers_Assignment, RaceEvent_Assignment;
+
+CREATE TABLE RaceEvent_Assignment (
+Event_id int PRIMARY KEY,
+Event_name nvarchar(20)
+);
+
+
+CREATE TABLE Swimmers_Assignment (
+Swimmer_id int,
+Swimmer_name nvarchar(20),
+DOB date,
+Gender varchar(1),
+PRIMARY KEY (Swimmer_id)
+);
+
+
+CREATE TABLE Competition_Assignment (
+Competition_id int PRIMARY KEY,
+Name_of_competition nvarchar(50),
+Date_of_competition date,
+Venue nvarchar(20)
+);
+
+
+CREATE TABLE Specialty_Assignment (
+Swimmer_id int,
+Specialty_id int,
+PRIMARY KEY (Swimmer_id, Specialty_id),
+FOREIGN KEY (Swimmer_id) REFERENCES Swimmers_Assignment(Swimmer_id),
+FOREIGN KEY (Specialty_id) REFERENCES RaceEvent_Assignment(Event_id)
+);
+
+
+CREATE TABLE Performance_Assignment (
+Performance_id int PRIMARY KEY,
+Swimmer_id int,
+Event_id int,
+Competition_id int,
+Performance decimal(6,2),
+Position int,
+FOREIGN KEY (Swimmer_id) REFERENCES Swimmers_Assignment(Swimmer_id),
+FOREIGN KEY (Event_id) REFERENCES RaceEvent_Assignment(Event_id),
+FOREIGN KEY (Competition_id) REFERENCES Competition_Assignment(Competition_id)
+);
+------------------------------------------------------------------------------------
+-- RaceEvent_Assignment
+INSERT INTO RaceEvent_Assignment VALUES (1, '100m Free');
+INSERT INTO RaceEvent_Assignment VALUES (2, '200m Butterfly');
+INSERT INTO RaceEvent_Assignment VALUES (3, '400m Medley');
+INSERT INTO RaceEvent_Assignment VALUES (4, '1500m Back');
+-- Swimmer_Assignment
+INSERT INTO Swimmers_Assignment VALUES (1, 'David Smith', '2000-12-10', 'M');
+INSERT INTO Swimmers_Assignment VALUES (2, 'David Quang', '2003-12-12', 'M');
+INSERT INTO Swimmers_Assignment VALUES (3, 'Giang Vu', '2003-10-11', 'F');
+
+
+-- Competition_Assignment
+INSERT INTO Competition_Assignment VALUES (1, '2018 NSW Annual Swimming Games', '2018-2-10','Wagga Wagga');
+INSERT INTO Competition_Assignment VALUES (2, '2019 NSW Annual Swimming Games', '2018-2-10', 'Wegge Wegge');
+INSERT INTO Competition_Assignment VALUES (3, '2020 NSW Annual Swimming Games', '2018-2-10', 'Woggo Woggo');
+
+
+--Specialty_Assignment
+INSERT INTO Specialty_Assignment VALUES (1,1);
+INSERT INTO Specialty_Assignment VALUES (1,2);
+INSERT INTO Specialty_Assignment VALUES (2,3);
+INSERT INTO Specialty_Assignment VALUES (2,4);
+INSERT INTO Specialty_Assignment VALUES (3,1);
+INSERT INTO Specialty_Assignment VALUES (3,2);
+INSERT INTO Specialty_Assignment VALUES (3,4);
+
+
+--Performance_Assignment
+-- per_id, swimmer_id, Event_id, Competition_id, performance, position
+INSERT INTO Performance_Assignment VALUES (1, 1, 1, 1, 50.24, 1);
+INSERT INTO Performance_Assignment VALUES (2, 2, 1, 1, 50.36, 2);
+INSERT INTO Performance_Assignment VALUES (3, 3, 1, 1, 50.50, 1);
+INSERT INTO Performance_Assignment VALUES (4, 1, 2, 1, 50.40, 1);
+INSERT INTO Performance_Assignment VALUES (5, 2, 2, 1, 50.37, 2);
+INSERT INTO Performance_Assignment VALUES (6, 3, 2, 1, 50.22, 3);
+INSERT INTO Performance_Assignment VALUES (7, 1, 3, 1, 60.10, 1);
+INSERT INTO Performance_Assignment VALUES (8, 2, 3, 1, 60.05, 2);
+INSERT INTO Performance_Assignment VALUES (9, 3, 3, 1, 60.15, 3);
+INSERT INTO Performance_Assignment VALUES (10, 1, 4, 1, 120.10, 2);
+INSERT INTO Performance_Assignment VALUES (11, 2, 4, 1, 119.05, 1);
+INSERT INTO Performance_Assignment VALUES (12, 3, 4, 1, 121.05, 1);
+
+
+/*
+SELECT * FROM Swimmers_Assignment;
+SELECT * FROM RaceEvent_Assignment;
+SELECT * FROM Competition_Assignment;
+SELECT * FROM Specialty_Assignment;
+SELECT * FROM Performance_Assignment;
+*/
+
+
+-----------------------------------------------------------------------------
+-- Question 3.iii
+-- Select all swimmers who won 1st place in any event of a competition for the club
+-----------------------------------------------------------------------------
+SELECT Swimmers_Assignment.Gender, 
+	   RaceEvent_Assignment.Event_name, 
+	   Performance_Assignment.Performance, 
+	   Swimmers_Assignment.Swimmer_name, 
+	   FORMAT(Swimmers_Assignment.DOB, 'dd/MM/yyyy') AS Date_of_birth,
+	   FORMAT(Competition_Assignment.Date_of_competition, 'dd/MM/yyyy') AS Date_of_competition,
+	   Competition_Assignment.Name_of_competition, 
+	   Competition_Assignment.Venue, 
+	   Performance_Assignment.Position
+FROM ((Performance_Assignment INNER JOIN Swimmers_Assignment ON Performance_Assignment.Swimmer_id = Swimmers_Assignment.Swimmer_id)
+	INNER JOIN RaceEvent_Assignment ON Performance_Assignment.Event_id = RaceEvent_Assignment.Event_id)
+	INNER JOIN Competition_Assignment ON Performance_Assignment.Competition_id = Competition_Assignment.Competition_id
+WHERE Performance_Assignment.Position = 1;
+
+
+-----------------------------------------------------------------------------
+-- Question 3.iv
+-- Select all swimmers who won 1st at least on event for the club.
+-----------------------------------------------------------------------------
+SELECT Swimmers_Assignment.Swimmer_name, 
+	   Competition_Assignment.Name_of_competition, 
+	   RaceEvent_Assignment.Event_name, 
+	   Performance_Assignment.Position,
+	   RaceEvent_Assignment.Event_id,
+	   Specialty_Assignment.Specialty_id
+FROM (((Swimmers_Assignment INNER JOIN Specialty_Assignment ON Swimmers_Assignment.Swimmer_id = Specialty_Assignment.Swimmer_id)
+	 INNER JOIN Performance_Assignment ON Swimmers_Assignment.Swimmer_id = Performance_Assignment.Swimmer_id)
+	 INNER JOIN Competition_Assignment ON Performance_Assignment.Competition_id = Competition_Assignment.Competition_id)
+	 INNER JOIN RaceEvent_Assignment ON Performance_Assignment.Event_id = RaceEvent_Assignment.Event_id
+WHERE Performance_Assignment.Position = 1 AND Specialty_Assignment.Specialty_id = Performance_Assignment.Event_id;
+

@@ -1,0 +1,34 @@
+drop TABLE IF EXISTS Universities, Students, StudentNSW;
+
+
+CREATE TABLE Universities (
+Uni_id int PRIMARY KEY,
+Uni_name nvarchar(20),
+);
+
+
+CREATE TABLE Students (
+Student_id int PRIMARY KEY,
+Student_name nvarchar(20),
+Student_DOB Date,
+Nationality nvarchar(20)
+);
+
+
+CREATE TABLE StudentNSW (
+StudentNSW_id int PRIMARY KEY,
+Student_id int,
+Uni_id int,
+DateJoin date,
+DateEnd date
+FOREIGN KEY Student_id REFERENCES Students(Student_id),
+FOREIGN KEY Uni_id REFERENCES Universities(Uni_id)
+);
+
+/*
+Table Universities: Uni_id (PK),
+Table Students: Student_id (PK),
+Table StudentNSW: StudentNSW_id (PK), Student_id (FK), Uni_id (FK)
+
+
+

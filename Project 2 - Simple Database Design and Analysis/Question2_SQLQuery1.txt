@@ -1,0 +1,193 @@
+drop table Viewing, PropertyForRent, Privateowner;
+drop table Client, Staff, Branch;
+
+
+/* DreamHome tables: see schemas at page 197 or 189 for edition 5
+*/
+
+/* page 189 (edition 5):
+   different ways of creating tables are used for a variety
+*/
+
+CREATE TABLE Branch (
+branchNo varchar(10) PRIMARY KEY,
+street varchar(20),
+city varchar(20),
+postcode varchar(10)
+);
+
+CREATE TABLE Staff (
+staffNo varchar(10) PRIMARY KEY,
+fName nvarchar(20),
+lName nvarchar(20),
+position varchar(15),
+sex char(1),
+DOB datetime,
+salary numeric(8,2),
+branchNo varchar(10) FOREIGN KEY REFERENCES Branch
+);
+
+CREATE TABLE PrivateOwner (
+ownerNo varchar(10) PRIMARY KEY,
+fName nvarchar(20),
+lName nvarchar(20),
+Address varchar(40),
+telNo varchar(15)
+);
+
+CREATE TABLE PropertyForRent (
+propertyNo varchar(10) PRIMARY KEY,
+street varchar(20),
+city varchar(20),
+postcode varchar(10),
+type varchar(10) not null,
+rooms numeric(2) default 4,
+rent numeric(5,2) default 0,
+ownerNo varchar(10) FOREIGN KEY REFERENCES PrivateOwner,
+staffNo varchar(10) FOREIGN KEY REFERENCES Staff,
+branchNo varchar(10) FOREIGN KEY REFERENCES Branch
+);
+
+CREATE TABLE Client (
+clientNo varchar(10) PRIMARY KEY,
+fName nvarchar(20),
+lName nvarchar(20),
+telNo varchar(15),
+prefType varchar(10),
+maxRent numeric(6,2),
+eMail varchar(40)
+);
+
+CREATE TABLE Viewing (
+clientNo varchar(10)
+  constraint clientNo_fk FOREIGN KEY(clientNo) REFERENCES Client,
+propertyNo varchar(10)
+  FOREIGN KEY REFERENCES PropertyForRent,
+viewDate datetime,
+comment varchar(100),
+constraint viewing_pk PRIMARY KEY(clientNo,propertyNo)
+);
+
+
+SET NOCOUNT ON
+
+INSERT INTO Branch VALUES ('B002','56 Cover Drive','London','NW10 6EU');
+INSERT INTO Branch VALUES ('B003','163 Main Street','Glasgow','G11 9QX');
+INSERT INTO Branch VALUES ('B004','32 Manse Road','Bristol','BS99 1NZ');
+INSERT INTO Branch VALUES ('B005','22 Deer Road','London','SW1 4EH');
+INSERT INTO Branch VALUES ('B007','16 Argyll Street','Aberdeen','AB2 3SU');
+
+-- uncomment following 6 lines if using locale australia
+-- INSERT INTO Staff VALUES ('SA9','Mary','Howe','Assistant','F','19/2/1980',18000,'B007');
+-- INSERT INTO Staff VALUES ('SG14','David','Ford','Supervisor','M','24/3/1968',36000,'B003');
+-- INSERT INTO Staff VALUES ('SG37','Ann','Beech','Assistant','F','10/11/1970',24000,'B003');
+-- INSERT INTO Staff VALUES ('SG5','Susan','Brand','Manager','F','3/6/1950',48000,'B003');
+-- INSERT INTO Staff VALUES ('SL21','John','White','Manager','M','1/10/1955',60000,'B005');
+-- INSERT INTO Staff VALUES ('SL41','Julie','Lee','Assistant','F','13/6/1975',18000,'B005');
+
+-- using default locale (comment off following 6 lines if using australia locale)
+INSERT INTO Staff VALUES ('SA9','Mary','Howe','Assistant','F','2/19/1980',18000,'B007');
+INSERT INTO Staff VALUES ('SG14','David','Ford','Supervisor','M','3/24/1968',36000,'B003');
+INSERT INTO Staff VALUES ('SG37','Ann','Beech','Assistant','F','11/10/1970',24000,'B003');
+INSERT INTO Staff VALUES ('SG5','Susan','Brand','Manager','F','6/3/1950',48000,'B003');
+INSERT INTO Staff VALUES ('SL21','John','White','Manager','M','10/1/1955',60000,'B005');
+INSERT INTO Staff VALUES ('SL41','Julie','Lee','Assistant','F','6/13/1975',18000,'B005');
+
+INSERT INTO Client VALUES ('CR56','Fred','Flintstone','555 1234','House',450,'fred@flintyrock.com');
+INSERT INTO Client VALUES ('CR62','Wilma','Flintstone','555 1234','Flat',350,'wilma@flintyrock.com');
+INSERT INTO Client VALUES ('CR74','Albert','Johnstone','555 6677','Flat',450,'albie@johnstone.com');
+INSERT INTO Client VALUES ('CR77','Clark','Kent','555 9999','Flat',400,'clark@supersite.com');
+INSERT INTO Client VALUES ('CR79','Joe','Bloggs','123 4567','House',450,'joe@paisley.com');
+INSERT INTO Client VALUES ('CR83','Edward','Scissorhands','123 4567','House',300,'eddie@scix.com');
+INSERT INTO Client VALUES ('CR91','Albert','Enistein','555 6789',NULL,450,'bert@nuclearintent.com');
+INSERT INTO Client VALUES ('CR92','Snorrie','Sturrluson','333 4567',NULL,400,'snorrie@iceland.com');
+INSERT INTO Client VALUES ('CR93','Ferdinand','Oblogiotta','123 5555','House',450,'ferdy@orage.com');
+INSERT INTO Client VALUES ('CR94','Joe','Schmoe','123 45678','House',550,'joes@largy.com');
+INSERT INTO Client VALUES ('CR95','Bill','Gates','123 5555','House',1000,'bill@gatesland.com');
+INSERT INTO Client VALUES ('CR96','Bruce','Wayne','555 6789','House',900,'wayne@batty.com');
+
+INSERT INTO PrivateOwner VALUES ('CO46', 'Joe', 'Keogh', '2 Fergus Dr, Aberdeen AB2 7SX', '01224-861212');
+INSERT INTO PrivateOwner VALUES ('CO87', 'Carol', 'Farrel', '6 Achray St, Glasgow G32 9DX', '0141-357-7419');
+INSERT INTO PrivateOwner VALUES ('CO40', 'Tina', 'Murphy', '63 Well St, Glasgow G42', '0141-943-1728');
+INSERT INTO PrivateOwner VALUES ('CO93', 'Tony', 'Shaw', '12 Park Pl, Glasgow G4 0QR', '0141-225-7025');
+
+INSERT INTO PropertyForRent VALUES ('PA14','16 Holhead','Aberdeen','AB7 5SU','House',6,650,'CO46','SA9','B007');
+INSERT INTO PropertyForRent VALUES ('PG16','5 Novar Drive','Glasgow','G12 9AX','Flat',4,450,'CO93','SG14','B003');
+INSERT INTO PropertyForRent VALUES ('PG21','18 Dale Road','Glasgow','G12','House',5,600,'CO87','SG37','B003');
+INSERT INTO PropertyForRent VALUES ('PG36','2 Manor Road','Glasgow','G32 4QX','Flat',3,375,'CO93','SG37','B003');
+INSERT INTO PropertyForRent VALUES ('PG4','6 Lawrence Street','Glasgow','G11 9QX','Flat',3,350,'CO40','SA9','B003');
+INSERT INTO PropertyForRent VALUES ('PG97','Muir Drive','Aberdeen','AB42 1DD','House',3,380,'CO46','SA9','B007');
+INSERT INTO PropertyForRent VALUES ('PL94','6 Argyll Street','London','NW2','Flat',4,400,'CO87','SL41','B005');
+
+INSERT INTO Viewing VALUES ('CR56', 'PA14', '24-May-2018', 'too small');
+INSERT INTO Viewing VALUES ('CR77', 'PG4', '20-April-2018', 'too remote');
+INSERT INTO Viewing VALUES ('CR56', 'PG4', '5/26/2018', NULL );
+INSERT INTO Viewing VALUES ('CR91', 'PA14', '14-May-2018', 'no dining room');
+INSERT INTO Viewing VALUES ('CR56', 'PG36', '28-Apr-18', NULL );
+
+SET NOCOUNT OFF
+
+/*
+select * from Branch;
+select * from Staff;
+select * from Client;
+select * from PrivateOwner;
+select * from PropertyForRent;
+select * from Viewing;
+*/
+
+
+
+----------------------------------------------------------------------------------------
+-- Question 2.ii:
+-- Update staf member Julie Lee into my name and change DOB to a date after 1990
+-- If have team member change staffno = "SL21" Where name is John White to team partner's name
+-----------------------------------------------------------------------------
+UPDATE Staff 
+SET Staff.fName = 'Quang', Staff.lName = 'Nguyen', DOB = '12/12/2003'
+WHERE Staff.fName = 'Julie' AND Staff.lName = 'Lee';
+-- What about John White if you dont have partner
+
+
+
+-----------------------------------------------------------------------------
+-- Question 2.iii:
+-- write SQL statement to list all client names, max rent and their telephone number
+-----------------------------------------------------------------------------
+SELECT fName, lName, maxRent, telNo 
+FROM Client;
+
+
+-----------------------------------------------------------------------------
+-- Question 2.iv:
+-- write SQL statement to list staff name, pos, postcode of their branch. Order it according to postcode, and last name
+-----------------------------------------------------------------------------
+SELECT Staff.fName, Staff.lName, Staff.position, Branch.postcode
+FROM Staff
+INNER JOIN Branch ON Staff.branchNo = Branch.branchNo
+ORDER BY Branch.postcode, Staff.lName ASC;
+
+
+-----------------------------------------------------------------------------
+-- Question 2.v:
+-- We need, all Branch.postcode, PropertyForRent.propertyNo, Staff.fName, Staff.lName. Order it according to postcode
+-----------------------------------------------------------------------------
+SELECT Branch.postcode, PropertyForRent.propertyNo, Staff.fName, Staff.lName
+FROM Staff
+INNER JOIN (Branch INNER JOIN PropertyForRent ON Branch.branchNo = PropertyForRent.branchNo)
+ON Staff.staffNo = PropertyForRent.staffNo
+ORDER BY PropertyForRent.postcode ASC;
+
+
+-----------------------------------------------------------------------------
+-- Question 2.vi:
+-- Write an SQL statement to list all the properties that have been viewed by one or more clients. 
+-- list PropertyForRent.postcode, PropertyForRent.propertyNo, PropertyForRent.street, Staff.lName, Client.lName, Viewing.viewDate. Order it by postcode, then street
+-----------------------------------------------------------------------------
+SELECT DISTINCT PropertyForRent.postcode, PropertyForRent.propertyNo, PropertyForRent.street, Staff.lName AS Staff_lName, Client.lName AS Client_lName, Viewing.viewDate
+--INTO New_prop
+FROM ((Viewing LEFT JOIN Client ON Viewing.clientNo = Client.clientNo) 
+	   INNER JOIN PropertyForRent ON Viewing.propertyNo = PropertyForRent.propertyNo)
+	   INNER JOIN Staff ON PropertyForRent.staffNo = Staff.staffNo
+ORDER BY PropertyForRent.postcode, PropertyForRent.street ASC;
+
