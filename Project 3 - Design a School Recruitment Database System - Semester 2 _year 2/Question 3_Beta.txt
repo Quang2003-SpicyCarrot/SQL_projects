@@ -1,0 +1,83 @@
+/* PRAC 9: Pet database
+*/
+
+DROP TABLE PetAndOwner, Pet, PetType, Owner;
+
+CREATE TABLE PetType (
+  petTypeId  VARCHAR(10) PRIMARY KEY,
+  animalType VARCHAR(20),
+  breed      VARCHAR(20)
+);
+
+CREATE TABLE Owner (
+  ownerId    VARCHAR(10) PRIMARY KEY,
+  firstName  VARCHAR(20),
+  lastName   VARCHAR(20) NOT NULL,
+  homePhoneNumber VARCHAR(20),
+  streetAddress   VARCHAR(80),
+  suburb          VARCHAR(20),
+  postcode        VARCHAR(10)
+);
+
+CREATE TABLE Pet (
+  petId     VARCHAR(10) PRIMARY KEY,
+  petName   VARCHAR(20),
+  sex       CHAR(1)
+            CHECK (sex IN ('M', 'F')),
+  petTypeId VARCHAR(10)
+            FOREIGN KEY REFERENCES PetType
+);
+
+CREATE TABLE PetAndOwner (
+  ownerId    VARCHAR(10),
+  petId      VARCHAR(10),
+  PRIMARY KEY (ownerId, petId),
+  FOREIGN KEY (ownerId) REFERENCES Owner,
+  FOREIGN KEY (petId) REFERENCES Pet
+);
+
+
+INSERT INTO PetType VALUES ('001', 'dog', 'Bulldog');
+INSERT INTO PetType VALUES ('002', 'dog', 'Lhasa Apso');
+INSERT INTO PetType VALUES ('003', 'dog', 'Maltese');
+INSERT INTO PetType VALUES ('004', 'cat', 'Persian');
+INSERT INTO PetType VALUES ('005', 'cat', 'Ragdoll');
+
+INSERT INTO Owner VALUES ('001', 'David', 'Smith', '12345678', '100 Victoria Road', 'Rydalmere', '2116');
+INSERT INTO Owner VALUES ('002', 'Louise', 'Brown', '87654321', '1 James Ruse Road', 'Rydalmere', '2116');
+INSERT INTO Owner VALUES ('003', 'Robert', 'Brown', '11223344', '2 Wentworth Street', 'Parramatta', '2150');
+INSERT INTO Owner VALUES ('004', 'Avatar', 'Phantom', '',  '1 Pandora', 'Na''vi Land', '0000');
+
+INSERT INTO Pet VALUES ('001', 'Mickey Mouse', 'M', '001');
+INSERT INTO Pet VALUES ('002', 'Bugs Bunny', 'M', '001');
+INSERT INTO Pet VALUES ('003', 'Betty Boop', 'F', '002');
+INSERT INTO Pet VALUES ('004', 'Droopy', 'M', '003');
+INSERT INTO Pet VALUES ('005', 'Penelope', 'F', '004');
+INSERT INTO Pet VALUES ('006', 'Jerry', 'F', '005');
+
+INSERT INTO PetAndOwner VALUES ('001', '001');
+INSERT INTO PetAndOwner VALUES ('001', '004');
+INSERT INTO PetAndOwner VALUES ('002', '001');
+INSERT INTO PetAndOwner VALUES ('002', '005');
+INSERT INTO PetAndOwner VALUES ('003', '002');
+INSERT INTO PetAndOwner VALUES ('002', '003');
+------------------------------------------------------------
+SELECT * FROM PetType;
+SELECT * FROM Owner;
+SELECT * FROM Pet;
+SELECT * FROM PetAndOwner;
+
+
+-------------------------------------------------------------
+-- Question Beta:
+-------------------------------------------------------------
+SELECT o.ownerID, o.firstName, o.lastName
+FROM Owner o
+WHERE EXISTS (
+	SELECT *
+	FROM PetAndOwner pao, Pet p, PetType pt
+	WHERE pao.petId = p.petId 
+		  AND p.petId = pt.petTypeId 
+		  AND pt.animalType = 'dog' 
+		  AND pao.ownerId = o.ownerId
+	);

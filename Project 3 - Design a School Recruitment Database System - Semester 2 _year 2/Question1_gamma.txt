@@ -1,0 +1,206 @@
+
+drop table order_detail, product;
+drop table vendor,  cus_order, customer;
+
+
+CREATE TABLE VENDOR (
+ V_CODE     NUMERIC(5)   NOT NULL,
+ V_NAME     VARCHAR(35) NOT NULL,
+ V_CONTACT  VARCHAR(15) NOT NULL,
+ V_AREACODE VARCHAR(3)     NOT NULL,
+ V_PHONE    VARCHAR(8)     NOT NULL,
+ V_STATE    VARCHAR(3)     NOT NULL,
+ V_ORDER    VARCHAR(1)     NOT NULL,
+ CONSTRAINT VENDOR_PK PRIMARY KEY (V_CODE));
+
+CREATE TABLE PRODUCT (
+ P_CODE     varchar(10)
+   CONSTRAINT PRODUCT_P_CODE_PK PRIMARY KEY,
+ P_DESCRIPT varchar(35) NOT NULL,
+ P_INDATETIME   DATETIME         NOT NULL,
+
+ -- total number of products current in stock
+ P_ONHAND   NUMERIC(4)    NOT NULL,
+
+ -- recommended minimum number of products to be sold in each order
+ P_MIN      NUMERIC(4)    NOT NULL,
+
+ P_PRICE    NUMERIC(8,2)  NOT NULL,
+ P_DISCOUNT NUMERIC(4,2)  NOT NULL CHECK (P_DISCOUNT >= 0 AND P_DISCOUNT < 1),
+ V_CODE     NUMERIC(5),
+   CONSTRAINT PRODUCT_V_CODE_FK
+   FOREIGN KEY (V_CODE) REFERENCES VENDOR);
+
+
+CREATE TABLE CUSTOMER (
+CUS_CODE       	NUMERIC(6)
+ CONSTRAINT CUSTOMER_PK PRIMARY KEY,
+CUS_LNAME       varchar(15) NOT NULL,
+CUS_FNAME       varchar(15) NOT NULL,
+CUS_INITIAL     CHAR(1),
+CUS_AREACODE 	VARCHAR(3) DEFAULT '02' NOT NULL CHECK(CUS_AREACODE IN ('03','07','08')),
+CUS_PHONE       VARCHAR(8) NOT NULL,
+CUS_BALANCE     NUMERIC(9,2) DEFAULT 0.00);
+
+CREATE TABLE CUS_ORDER (
+ORDER_CODE       NUMERIC(6)
+ CONSTRAINT ORDER_PK PRIMARY KEY,
+CUS_CODE       NUMERIC(6) NOT NULL
+
+CONSTRAINT CUS_ORDER_FK FOREIGN KEY(CUS_CODE) REFERENCES CUSTOMER
+
+,
+ORDDATETIME       DATETIME);
+
+CREATE TABLE ORDER_DETAIL(
+ORDER_CODE	NUMERIC(6),
+PRODUCT_CODE	VARCHAR(10),
+QUANTITY	NUMERIC(4) DEFAULT 1 CHECK (QUANTITY >=0),
+  CONSTRAINT ORD_DETAIL_PK PRIMARY KEY(ORDER_CODE,PRODUCT_CODE),
+  CONSTRAINT ORD_DETAIL_FK1 FOREIGN KEY (ORDER_CODE) REFERENCES CUS_ORDER(ORDER_CODE),
+  CONSTRAINT ORD_DETAIL_FK2 FOREIGN KEY (PRODUCT_CODE) REFERENCES PRODUCT(P_CODE));
+
+
+------------------------------------------------------------------------------------
+SET NOCOUNT ON
+
+INSERT INTO Vendor
+VALUES (21225,'Bryson, Inc.','Stan Smithson','02','223-3234','NSW','Y');
+
+
+INSERT INTO Vendor
+VALUES (21226,'Superloo, Inc.','Mary Flushing','02','215-8995','NSW','N');
+
+INSERT INTO Vendor
+VALUES (21227,'Blackwell','Bob Jones','02','215-9999','NSW','N');
+
+INSERT INTO Vendor
+VALUES (21999,'ABC Victoria','Ali Nasour','03','662-8789','VIC','N');
+
+INSERT INTO Vendor
+VALUES (22333,'Stewart Brothers','Yan Wong','03','445-8888','VIC','N');
+
+INSERT INTO Vendor
+VALUES (66777,'Buchner Pty Ltd','Stu Buchner','02','215-4444','NSW','N');
+
+INSERT INTO Vendor
+VALUES (33322,'Blue Seas','Lee','03','395-8995','VIC','Y');
+
+
+INSERT INTO Product
+VALUES ('11QER/31','Power painter, 15 psi., 3-nozzle','03-NOV-19',8,5,109.99,0.00,21225);
+
+INSERT INTO Product
+VALUES ('13-Q2/P2','7.25-in. pwr. saw blade','13-DEC-19',32,15,14.99, 0.05,22333);
+
+
+INSERT INTO Product
+VALUES ('BRT-345','Titanium drill bit', '18-OCT-18', 75, 10, 4.50, 0.06, 21225);
+
+INSERT INTO Product
+VALUES ('13-Q3/P4','10.5-in. pwr. saw blade','13-DEC-19',3,15,54.00, 0.05,22333);
+
+INSERT INTO Product
+VALUES ('LZQ202','10.5-in. pwr. saw blade','13-NOV-19',3,15,54.00, 0.05,66777);
+
+INSERT INTO Product
+VALUES ('PB101','professional paintbrush pack','11-DEC-19',71,15,11.50, 0.05,66777);
+
+INSERT INTO Customer
+VALUES (555555, 'Jackson', 'Suzanne', 'S', '07', '12345678', 5523.76);
+
+INSERT INTO Customer
+VALUES (888888, 'Hazal', 'Ali', 'A','08', '98989898', 0.0);
+
+INSERT INTO Customer
+VALUES (333333, 'Wang', 'Phan', 'P','08', '56565656', 10.05);
+
+INSERT INTO Customer
+VALUES (111111, 'Tudor-Smith', 'Toby', 'T','03', '98989898', 978.45);
+
+INSERT INTO Cus_order
+VALUES (444555, 888888, '23-SEP-20');
+
+
+INSERT INTO Cus_order
+VALUES (444333, 888888, '24-SEP-20');
+
+INSERT INTO Cus_order
+VALUES (333111, 888888, '23-SEP-20');
+
+INSERT INTO Cus_order
+VALUES (555555, 333333, '23-SEP-20');
+
+INSERT INTO Cus_order
+VALUES (999999, 333333, '20-SEP-20');
+
+
+INSERT INTO ORDER_DETAIL
+VALUES (999999, 'LZQ202', 10);  -- not all in stock
+
+INSERT INTO ORDER_DETAIL
+VALUES (999999, 'BRT-345', 15);
+
+
+INSERT INTO ORDER_DETAIL
+VALUES (999999, 'PB101', 20);
+
+
+INSERT INTO ORDER_DETAIL
+VALUES (555555, 'BRT-345',20);
+
+
+INSERT INTO ORDER_DETAIL
+VALUES (555555, 'PB101', 20);
+
+INSERT INTO ORDER_DETAIL
+VALUES (333111, 'BRT-345', 25);
+
+
+INSERT INTO ORDER_DETAIL
+VALUES (333111, '11QER/31', 5);
+
+SET NOCOUNT OFF
+
+--------------------------------------------------------------------------
+SELECT * FROM ORDER_DETAIL;
+SELECT * FROM PRODUCT;
+SELECT * FROM VENDOR;
+SELECT * FROM CUS_ORDER;
+SELECT * FROM CUSTOMER;
+--------------------------------------------------------------------------
+
+
+
+--------------------------------------------------------------------------
+-- Question y: a
+--------------------------------------------------------------------------
+SELECT P_CODE, V_NAME
+FROM PRODUCT, VENDOR
+WHERE PRODUCT.V_CODE = VENDOR.V_CODE
+ORDER BY P_CODE ASC, V_NAME ASC;
+
+
+
+--------------------------------------------------------------------------
+-- Question y: b
+--------------------------------------------------------------------------
+-- Here we select where customer code is 333333 which is Customer Fname: Phan
+SELECT CUS_ORDER.CUS_CODE, CUSTOMER.CUS_FNAME, PRODUCT.P_DESCRIPT, VENDOR.V_NAME
+FROM (((CUS_ORDER INNER JOIN ORDER_DETAIL ON CUS_ORDER.ORDER_CODE = ORDER_DETAIL.ORDER_CODE)
+INNER JOIN PRODUCT ON ORDER_DETAIL.PRODUCT_CODE = PRODUCT.P_CODE)
+INNER JOIN VENDOR ON PRODUCT.V_CODE = VENDOR.V_CODE)
+LEFT JOIN CUSTOMER ON CUS_ORDER.CUS_CODE = CUSTOMER.CUS_CODE
+WHERE CUS_ORDER.CUS_CODE = 333333;
+
+
+
+--------------------------------------------------------------------------
+-- Question y: c
+--------------------------------------------------------------------------
+SELECT co.CUS_CODE, co.ORDER_CODE, SUM(p.P_PRICE) totalPrice
+FROM CUS_ORDER co, ORDER_DETAIL od, PRODUCT p
+WHERE co.ORDER_CODE = od.ORDER_CODE AND od.PRODUCT_CODE = p.P_CODE
+GROUP BY co.CUS_CODE, co.ORDER_CODE;
+
+
