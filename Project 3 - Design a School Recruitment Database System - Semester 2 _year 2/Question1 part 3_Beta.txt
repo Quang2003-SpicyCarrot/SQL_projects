@@ -61,16 +61,25 @@ INSERT INTO PetAndOwner VALUES ('002', '001');
 INSERT INTO PetAndOwner VALUES ('002', '005');
 INSERT INTO PetAndOwner VALUES ('003', '002');
 INSERT INTO PetAndOwner VALUES ('002', '003');
------------------------------------------------------------------
+------------------------------------------------------------
 /*
 SELECT * FROM PetType;
 SELECT * FROM Owner;
 SELECT * FROM Pet;
 SELECT * FROM PetAndOwner;
+
 */
-------------------------------------------------------------------
--- Question Beta:
-------------------------------------------------------------------
-SELECT Owner.firstName, Owner.lastName, Pet.petName
-FROM (PetAndOwner RIGHT OUTER JOIN Owner ON PetAndOwner.ownerID = Owner.ownerId)
-LEFT JOIN Pet ON PetAndOwner.petId = Pet.petId;
+-------------------------------------------------------------
+-- Question Beta: For the Pet Database described in the previous practical, write
+-- an SQL statement with a subquery to list all the people in the Owner table who own at least a pet dog
+-------------------------------------------------------------
+SELECT o.ownerID, o.firstName, o.lastName
+FROM Owner o
+WHERE EXISTS (
+	SELECT *
+	FROM PetAndOwner pao, Pet p, PetType pt
+	WHERE pao.petId = p.petId 
+		  AND p.petId = pt.petTypeId 
+		  AND pt.animalType = 'dog' 
+		  AND pao.ownerId = o.ownerId
+	);

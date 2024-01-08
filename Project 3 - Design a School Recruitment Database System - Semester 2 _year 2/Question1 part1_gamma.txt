@@ -1,4 +1,3 @@
-
 drop table order_detail, product;
 drop table vendor,  cus_order, customer;
 
@@ -163,44 +162,49 @@ VALUES (333111, '11QER/31', 5);
 SET NOCOUNT OFF
 
 --------------------------------------------------------------------------
+/*
 SELECT * FROM ORDER_DETAIL;
 SELECT * FROM PRODUCT;
 SELECT * FROM VENDOR;
 SELECT * FROM CUS_ORDER;
 SELECT * FROM CUSTOMER;
+*/
 --------------------------------------------------------------------------
 
 
 
 --------------------------------------------------------------------------
--- Question y: a
+-- Question y - part a: List P_CODE for a product and the name V_NAME of the vendor
+-- who can supply the product. The output should be sorted according to P_CODE and
+-- then the V_NAME, all in the alphabetic order.
 --------------------------------------------------------------------------
 SELECT P_CODE, V_NAME
-FROM PRODUCT, VENDOR
-WHERE PRODUCT.V_CODE = VENDOR.V_CODE
+FROM PRODUCT p, VENDOR v
+WHERE p.V_CODE = v.V_CODE
 ORDER BY P_CODE ASC, V_NAME ASC;
 
 
 
 --------------------------------------------------------------------------
--- Question y: b
+-- Question y - part b: Pick a specific customer CUS_CODE, list the names of all
+-- the vendors who ever supplied parts to this customer. Do not repeat the
+-- vendor names in the result.
 --------------------------------------------------------------------------
 -- Here we select where customer code is 333333 which is Customer Fname: Phan
-SELECT CUS_ORDER.CUS_CODE, CUSTOMER.CUS_FNAME, PRODUCT.P_DESCRIPT, VENDOR.V_NAME
-FROM (((CUS_ORDER INNER JOIN ORDER_DETAIL ON CUS_ORDER.ORDER_CODE = ORDER_DETAIL.ORDER_CODE)
-INNER JOIN PRODUCT ON ORDER_DETAIL.PRODUCT_CODE = PRODUCT.P_CODE)
-INNER JOIN VENDOR ON PRODUCT.V_CODE = VENDOR.V_CODE)
-LEFT JOIN CUSTOMER ON CUS_ORDER.CUS_CODE = CUSTOMER.CUS_CODE
-WHERE CUS_ORDER.CUS_CODE = 333333;
+SELECT DISTINCT(co.CUS_CODE), c.CUS_FNAME, p.P_DESCRIPT, v.V_NAME
+FROM CUS_ORDER co, CUSTOMER c, PRODUCT p, VENDOR v, ORDER_DETAIL od
+WHERE co.ORDER_CODE = od.ORDER_CODE AND
+      p.V_CODE = v.V_CODE AND
+	  c.CUS_CODE = co.CUS_CODE AND
+	  co.CUS_CODE = 333333;
 
 
-
+  
 --------------------------------------------------------------------------
--- Question y: c
+-- Question y - part c: List all the customer order (ORDER_CODE) and the corresponding
+-- total cost for each order
 --------------------------------------------------------------------------
 SELECT co.CUS_CODE, co.ORDER_CODE, SUM(p.P_PRICE) totalPrice
 FROM CUS_ORDER co, ORDER_DETAIL od, PRODUCT p
 WHERE co.ORDER_CODE = od.ORDER_CODE AND od.PRODUCT_CODE = p.P_CODE
 GROUP BY co.CUS_CODE, co.ORDER_CODE;
-
-

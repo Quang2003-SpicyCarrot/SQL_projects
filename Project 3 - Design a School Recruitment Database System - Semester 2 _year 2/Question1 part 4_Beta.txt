@@ -61,23 +61,20 @@ INSERT INTO PetAndOwner VALUES ('002', '001');
 INSERT INTO PetAndOwner VALUES ('002', '005');
 INSERT INTO PetAndOwner VALUES ('003', '002');
 INSERT INTO PetAndOwner VALUES ('002', '003');
-------------------------------------------------------------
+-----------------------------------------------------------------
+/*
 SELECT * FROM PetType;
 SELECT * FROM Owner;
 SELECT * FROM Pet;
 SELECT * FROM PetAndOwner;
-
-
--------------------------------------------------------------
--- Question Beta:
--------------------------------------------------------------
-SELECT o.ownerID, o.firstName, o.lastName
-FROM Owner o
-WHERE EXISTS (
-	SELECT *
-	FROM PetAndOwner pao, Pet p, PetType pt
-	WHERE pao.petId = p.petId 
-		  AND p.petId = pt.petTypeId 
-		  AND pt.animalType = 'dog' 
-		  AND pao.ownerId = o.ownerId
-	);
+*/
+------------------------------------------------------------------
+-- Question Beta:For the Pet Database described in a previous practical, 
+--write an SQL statement to list all the people in the Owner table, along with their pets' names if any.
+--That is, for each pet an owner has, there will be a record containing the owner and the pet's name.
+--For any owner contained in the Owner table, the output should always contain the owner's record even if no pets are associated with this owner. 
+--Hint: outer join/s may be needed.
+------------------------------------------------------------------
+SELECT Owner.firstName, Owner.lastName, Pet.petName
+FROM (PetAndOwner RIGHT OUTER JOIN Owner ON PetAndOwner.ownerID = Owner.ownerId)
+LEFT JOIN Pet ON PetAndOwner.petId = Pet.petId;

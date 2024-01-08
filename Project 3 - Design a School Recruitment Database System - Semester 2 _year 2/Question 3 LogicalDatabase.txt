@@ -1,0 +1,447 @@
+drop TABLE Communications, Express_Recruitment, Recruitment, Requests, Academic_Supervisor, Subjects_Position, Qualifications, Position, Subjects, Staff_Info;
+
+--------------------------------------------
+CREATE TABLE Staff_Info (
+StaffID int PRIMARY KEY,
+StaffName nvarchar (50),
+HomeAddress nvarchar (50),
+EmailAddress nvarchar (50),
+MobilePhoneNumber nvarchar(50),
+estTimeTravel int,
+preferredContactType nvarchar(50)
+);
+
+CREATE TABLE Subjects (
+SubjectID int PRIMARY KEY,
+SubjectName nvarchar (50)
+);
+
+
+CREATE TABLE Position (
+PositionID int PRIMARY KEY,
+PositionType nvarchar(50),
+PaymentRate int
+);
+
+
+CREATE TABLE Qualifications (
+QualificationID int PRIMARY KEY,
+StaffID int,
+SubjectID int,
+YearExperience int,
+Qualifications nvarchar(50),
+SelfRateCompetitiveness int,
+PositionPreferences int,
+FOREIGN KEY (StaffID) REFERENCES Staff_Info(StaffID),
+FOREIGN KEY (SubjectID) REFERENCES Subjects(SubjectID),
+FOREIGN KEY (PositionPreferences) REFERENCES Position(PositionID)
+);
+
+
+CREATE TABLE Subjects_Position (
+Subject_PositionID int PRIMARY KEY,
+PositionID int,
+SubjectID int,
+FOREIGN KEY (PositionID) REFERENCES Position(PositionID),
+FOREIGN KEY (SubjectID) REFERENCES Subjects(SubjectID)
+);
+
+CREATE TABLE Academic_Supervisor (
+AcadID int PRIMARY KEY,
+AcadName nvarchar(50)
+);
+
+CREATE TABLE Requests (
+RequestID int PRIMARY KEY,
+Subject_PositionID int,
+AcadID int,
+DateStart datetime,
+TeachingDuration int,
+WeeklyHours int,
+Venue nvarchar (50),
+Express_Recruitment nvarchar (10),
+FOREIGN KEY (Subject_PositionID) REFERENCES Subjects_Position(Subject_PositionID),
+FOREIGN KEY (AcadID) REFERENCES Academic_Supervisor(AcadID)
+);
+
+
+CREATE TABLE Recruitment (
+StaffID int,
+RequestID int,
+Status nvarchar(10),
+PRIMARY KEY (StaffID, RequestID),
+FOREIGN KEY (StaffID) REFERENCES Staff_Info(StaffID),
+FOREIGN KEY (RequestID) REFERENCES Requests(RequestID)
+);
+
+
+CREATE TABLE Express_Recruitment (
+ExpressID int PRIMARY KEY,
+RequestID int,
+sentDateTime datetime,
+expiredDateTime datetime,
+FOREIGN KEY (RequestID) REFERENCES Requests(RequestID)
+);
+
+CREATE TABLE Communications (
+StaffID int,
+ExpressID int,
+ResponseDateTime datetime,
+AcceptanceStatus nvarchar(50),
+PRIMARY KEY (StaffID, ExpressID),
+FOREIGN KEY (ExpressID) REFERENCES Express_Recruitment(ExpressID),
+FOREIGN KEY (StaffID) REFERENCES Staff_Info(StaffID)
+);
+
+-------------------------------------------------------
+--Insert Values Section
+INSERT INTO Staff_Info VALUES (1, 'Quang Dong Nguyen', '12 Wolf st', 'dongnguyen@gmail.com', '0490233965', 47, 'Telephone');
+INSERT INTO Staff_Info VALUES (2, 'Wes Ann', '13 Ann st', 'Wes@gmail.com', '0490233956', 38, 'Email');
+INSERT INTO Staff_Info VALUES (3, 'Mega Man', '19 Annex st', 'Mega1212@gmail.com', '0490644280', 38, 'Email');
+INSERT INTO Staff_Info VALUES (4, 'Rock Shaun', '20 Bomb st', 'Rock123@gmail.com', '0490650656', 29, 'SMS');
+INSERT INTO Staff_Info VALUES (5, 'Shaun Dea', '21 Holy st', 'Shaun1234@gmail.com', '0490123444', 10, 'Telephone');
+INSERT INTO Staff_Info VALUES (6, 'Deli Hank', '22 Holy st', 'Deli492@gmail.com', '0490424656', 39, 'SMS');
+INSERT INTO Staff_Info VALUES (7, 'Goosa Mousa', '10 Mold st', 'Goosa123@gmail.com', '0490144030', 15, 'SMS');
+
+INSERT INTO Subjects VALUES (1, 'Math');
+INSERT INTO Subjects VALUES (2, 'English');
+INSERT INTO Subjects VALUES (3, 'Geography');
+INSERT INTO Subjects VALUES (4, 'Physics');
+INSERT INTO Subjects VALUES (5, 'Economics');
+INSERT INTO Subjects VALUES (6, 'Chemistry');
+INSERT INTO Subjects VALUES (7, 'Biology');
+INSERT INTO Subjects VALUES (8, 'Music');
+INSERT INTO Subjects VALUES (9, 'Data Technology');
+
+INSERT INTO Position VALUES (1, 'Lecturing', 35);
+INSERT INTO Position VALUES (2, 'Tutoring', 35);
+INSERT INTO Position VALUES (3, 'Marking', 30);
+
+
+INSERT INTO Qualifications VALUES (1, 1, 1, 3, 'B. Mathematics', 2, 1);
+INSERT INTO Qualifications VALUES (2, 1, 2, 4, 'IELTS 8.5', 1, 2);
+INSERT INTO Qualifications VALUES (3, 2, 1, 5, 'B. Engineering Mathematics', 1, 3);
+INSERT INTO Qualifications VALUES (4, 2, 3, 2, 'M. Geography', 2, 3);
+INSERT INTO Qualifications VALUES (5, 3, 3, 4, 'B. Geography', 2, 3);
+INSERT INTO Qualifications VALUES (6, 3, 5, 5, 'B. Finance', 1, 1);
+INSERT INTO Qualifications VALUES (7, 3, 6, 2, 'B. Biological Engineering', 3, 3);
+INSERT INTO Qualifications VALUES (8, 3, 6, 2, 'B. Biological Engineering', 3, 2);
+INSERT INTO Qualifications VALUES (9, 3, 6, 2, 'B. Biological Engineering', 3, 1);
+INSERT INTO Qualifications VALUES (10, 4, 6, 4, 'B. Secondary Teaching and Education, M. Chemistry', 2, 3);
+INSERT INTO Qualifications VALUES (11, 4, 6, 4, 'B. Secondary Teaching and Education, M. Chemistry', 2, 2);
+INSERT INTO Qualifications VALUES (12, 4, 6, 4, 'B. Secondary Teaching and Education, M. Chemistry', 2, 1);
+INSERT INTO Qualifications VALUES (13, 4, 7, 2, 'M. Biochmistry and Molecular Biology', 3, 1);
+INSERT INTO Qualifications VALUES (14, 4, 4, 4, 'B. Secondary Teaching and Education, M. Physics', 1, 1);
+INSERT INTO Qualifications VALUES (15, 4, 4, 4, 'B. Secondary Teaching and Education, M. Physics', 1, 3);
+INSERT INTO Qualifications VALUES (16, 5, 2, 4, 'M. Secondary Teaching and Education, M. English', 1, 1);
+INSERT INTO Qualifications VALUES (17, 5, 2, 4, 'M. Secondary Teaching and Education, M. English', 1, 2);
+INSERT INTO Qualifications VALUES (18, 5, 2, 4, 'M. Secondary Teaching and Education, M. English', 1, 3);
+INSERT INTO Qualifications VALUES (19, 6, 5, 5, 'M. Finance', 1, 1);
+INSERT INTO Qualifications VALUES (20, 6, 5, 5, 'M. Finance', 1, 3);
+INSERT INTO Qualifications VALUES (21, 6, 5, 5, 'M. Finance', 1, 2);
+INSERT INTO Qualifications VALUES (22, 7, 5, 1, 'B. Finance and Entrepreurship', 1, 3);
+
+
+INSERT INTO Subjects_Position VALUES (1, 1, 1);
+INSERT INTO Subjects_Position VALUES (2, 1, 2);
+INSERT INTO Subjects_Position VALUES (3, 1, 3);
+INSERT INTO Subjects_Position VALUES (4, 1, 4);
+INSERT INTO Subjects_Position VALUES (5, 1, 5);
+INSERT INTO Subjects_Position VALUES (6, 1, 6);
+INSERT INTO Subjects_Position VALUES (7, 1, 7);
+INSERT INTO Subjects_Position VALUES (8, 1, 8);
+INSERT INTO Subjects_Position VALUES (9, 1, 9);
+INSERT INTO Subjects_Position VALUES (10, 2, 1);
+INSERT INTO Subjects_Position VALUES (11, 2, 2);
+INSERT INTO Subjects_Position VALUES (12, 2, 3);
+INSERT INTO Subjects_Position VALUES (13, 2, 4);
+INSERT INTO Subjects_Position VALUES (14, 2, 5);
+INSERT INTO Subjects_Position VALUES (15, 2, 6);
+INSERT INTO Subjects_Position VALUES (16, 2, 7);
+INSERT INTO Subjects_Position VALUES (17, 2, 8);
+INSERT INTO Subjects_Position VALUES (18, 2, 9);
+INSERT INTO Subjects_Position VALUES (19, 3, 1);
+INSERT INTO Subjects_Position VALUES (20, 3, 2);
+INSERT INTO Subjects_Position VALUES (21, 3, 3);
+INSERT INTO Subjects_Position VALUES (22, 3, 4);
+INSERT INTO Subjects_Position VALUES (23, 3, 5);
+INSERT INTO Subjects_Position VALUES (24, 3, 6);
+INSERT INTO Subjects_Position VALUES (25, 3, 7);
+INSERT INTO Subjects_Position VALUES (26, 3, 8);
+INSERT INTO Subjects_Position VALUES (27, 3 ,9);
+
+
+INSERT INTO Academic_Supervisor VALUES (1, 'Sam Sung');
+INSERT INTO Academic_Supervisor VALUES (2, 'Hoan Do');
+INSERT INTO Academic_Supervisor VALUES (3, 'Faje Hale')
+INSERT INTO Academic_Supervisor VALUES (4, 'Hayle Bale')
+INSERT INTO Academic_Supervisor VALUES (5, 'Ali Alwan')
+INSERT INTO Academic_Supervisor VALUES (6, 'Rakha Adam');
+INSERT INTO Academic_Supervisor VALUES (7, 'Quang Nguyen');
+INSERT INTO Academic_Supervisor VALUES (8, 'Shenhe');
+INSERT INTO Academic_Supervisor VALUES (9, 'Aws Alzuhairi');
+INSERT INTO Academic_Supervisor VALUES (10, 'Venti Han');
+INSERT INTO Academic_Supervisor VALUES (11, 'Diluc Adam');
+INSERT INTO Academic_Supervisor VALUES (12, 'Xiao Zhu');
+INSERT INTO Academic_Supervisor VALUES (13, 'Baizhu Hoan');
+INSERT INTO Academic_Supervisor VALUES (14, 'Khanh Vu');
+INSERT INTO Academic_Supervisor VALUES (15, 'Hayden Phan');
+INSERT INTO Academic_Supervisor VALUES (16, 'Jayden Pham');
+INSERT INTO Academic_Supervisor VALUES (17, 'Phuong Linh');
+
+
+INSERT INTO Requests VALUES (1, 1, 1, '2023-05-02 09:00:00', 26, 4, 'L01', 'No')
+INSERT INTO Requests VALUES (2, 2, 2, '2023-05-03 09:00:00', 26, 4, 'L02', 'No');
+INSERT INTO Requests VALUES (3, 3, 3, '2023-05-04 09:00:00', 26, 4, 'L03','No');
+INSERT INTO Requests VALUES (4, 4, 4, '2023-05-05 09:00:00', 26, 4, 'L04', 'No');
+INSERT INTO Requests VALUES (5, 5, 5, '2023-05-06 09:00:00', 26, 4, 'L05', 'No');
+INSERT INTO Requests VALUES (6, 6, 6, '2023-05-07 09:00:00', 26, 4,'L06', 'No');
+INSERT INTO Requests VALUES (7, 7, 7, '2023-05-08 09:00:00', 26, 4,'L07', 'No');
+INSERT INTO Requests VALUES (8, 10, 8, '2023-05-02 14:00:00', 26, 4,'T01', 'No');
+INSERT INTO Requests VALUES (9, 11, 9, '2023-05-03 14:00:00', 26, 4,'T02', 'No');
+INSERT INTO Requests VALUES (10, 12, 10, '2023-05-04 14:00:00', 26, 4,'T03', 'No');
+INSERT INTO Requests VALUES (11, 13, 11, '2023-05-05 14:00:00', 26, 4,'T04', 'No');
+INSERT INTO Requests VALUES (12, 14, 12, '2023-05-06 14:00:00', 26, 4,'T05', 'No');
+INSERT INTO Requests VALUES (13, 15, 13, '2023-05-07 14:00:00', 26, 4,'T06', 'No');
+INSERT INTO Requests VALUES (14, 16, 14, '2023-05-08 14:00:00', 26, 4,'T07',  'No');
+INSERT INTO Requests VALUES (15, 19, 1, '2023-05-02 19:00:00', 26, 4,'M01', 'No');
+INSERT INTO Requests VALUES (16, 20, 2, '2023-05-03 19:00:00', 26, 4,'M01', 'No');
+INSERT INTO Requests VALUES (17, 21, 3, '2023-05-04 19:00:00', 26, 4,'M01', 'No');
+INSERT INTO Requests VALUES (18, 22, 4, '2023-05-05 19:00:00', 26, 4,'M01', 'No');
+INSERT INTO Requests VALUES (19, 23, 5, '2023-05-06 19:00:00', 26, 4,'M01', 'No');
+INSERT INTO Requests VALUES (20, 24, 6, '2023-05-07 19:00:00', 26, 4,'M01', 'No');
+INSERT INTO Requests VALUES (21, 25, 7, '2023-05-08 19:00:00', 26, 4,'M01', 'No');
+--Emergency Recruitment
+INSERT INTO Requests VALUES (22, 14, 14, '2023-05-28 14:00:00', 0, 2,'T07', 'Yes');
+INSERT INTO Requests VALUES (23, 14, 14, '2023-07-15 14:00:00', 0, 3,'T07', 'Yes');
+INSERT INTO Requests VALUES (24, 21, 7, '2023-08-19 19:00:00', 0, 4,'M01', 'Yes');
+INSERT INTO Requests VALUES (25, 20, 6, '2023-09-22 19:00:00', 0, 2,'M01', 'Yes');
+INSERT INTO Requests VALUES (26, 13, 13, '2023-09-22 19:00:00', 0, 3,'M01', 'Yes');
+INSERT INTO Requests VALUES (27, 3, 3, '2023-09-22 09:00:00', 0, 4,'L03', 'Yes');
+INSERT INTO Requests VALUES (28, 3, 3, '2023-10-01 11:00:00', 0, 2,'L03', 'Yes');
+INSERT INTO Requests VALUES (29, 3, 3, '2023-10-22 11:00:00', 0, 2,'L03', 'Yes');
+INSERT INTO Requests VALUES (30, 2, 2, '2023-05-07 10:00:00', 0, 3, 'L02', 'Yes');
+
+
+INSERT INTO Recruitment VALUES (1, 1, 'Accepted');
+INSERT INTO Recruitment VALUES (2, 1, 'Declined');
+INSERT INTO Recruitment VALUES (1, 2, 'Accepted');
+INSERT INTO Recruitment VALUES (5, 2, 'Declined');
+INSERT INTO Recruitment VALUES (2, 3, 'Declined');
+INSERT INTO Recruitment VALUES (3, 3, 'Accepted');
+INSERT INTO Recruitment VALUES (4, 4, 'Accepted');
+INSERT INTO Recruitment VALUES (6, 5, 'Accepted');
+INSERT INTO Recruitment VALUES (3, 5, 'Declined');
+INSERT INTO Recruitment VALUES (3, 6, 'Accepted');
+INSERT INTO Recruitment VALUES (4, 6, 'Declined');
+INSERT INTO Recruitment VALUES (4, 7, 'Accepted');
+
+INSERT INTO Recruitment VALUES (1, 8, 'Declined');
+INSERT INTO Recruitment VALUES (2, 8, 'Accepted');
+INSERT INTO Recruitment VALUES (1, 9, 'Accepted');
+INSERT INTO Recruitment VALUES (5, 9, 'Declined');
+INSERT INTO Recruitment VALUES (2, 10, 'Accepted');
+INSERT INTO Recruitment VALUES (3, 10, 'Declined');
+INSERT INTO Recruitment VALUES (4, 11, 'Accepted');
+INSERT INTO Recruitment VALUES (6, 12, 'Declined');
+INSERT INTO Recruitment VALUES (3, 12, 'Accepted');
+INSERT INTO Recruitment VALUES (3, 13, 'Declined');
+INSERT INTO Recruitment VALUES (4, 13, 'Accepted');
+INSERT INTO Recruitment VALUES (4, 14, 'Accepted');
+
+INSERT INTO Recruitment VALUES (1, 15, 'Accepted');
+INSERT INTO Recruitment VALUES (2, 15, 'Accepted');
+INSERT INTO Recruitment VALUES (1, 16, 'Declined');
+INSERT INTO Recruitment VALUES (5, 16, 'Accepted');
+INSERT INTO Recruitment VALUES (2, 17, 'Accepted');
+INSERT INTO Recruitment VALUES (3, 17, 'Declined');
+INSERT INTO Recruitment VALUES (4, 18, 'Accepted');
+INSERT INTO Recruitment VALUES (6, 19, 'Declined');
+INSERT INTO Recruitment VALUES (3, 19, 'Accepted');
+INSERT INTO Recruitment VALUES (3, 20, 'Declined');
+INSERT INTO Recruitment VALUES (4, 20, 'Accepted');
+INSERT INTO Recruitment VALUES (4, 21, 'Accepted');
+
+
+INSERT INTO Express_Recruitment VALUES (1, 22, '2023-05-27 06:00:00','2023-05-28 06:00:00');
+INSERT INTO Express_Recruitment VALUES (2, 23, '2023-07-14 18:00:00','2023-07-15 06:00:00');
+INSERT INTO Express_Recruitment VALUES (3, 24, '2023-08-15 19:00:00','2023-08-19 06:00:00');
+INSERT INTO Express_Recruitment VALUES (4, 25, '2023-09-21 20:00:00','2023-09-22 06:00:00');
+INSERT INTO Express_Recruitment VALUES (5, 26, '2023-09-21 15:00:00','2023-09-22 06:00:00');
+INSERT INTO Express_Recruitment VALUES (6, 27, '2023-09-20 15:00:00','2023-09-22 06:00:00');
+INSERT INTO Express_Recruitment VALUES (7, 28, '2023-09-30 14:00:00','2023-10-01 06:00:00');
+INSERT INTO Express_Recruitment VALUES (8, 29, '2023-10-21 14:00:00','2023-10-22 06:00:00');
+INSERT INTO Express_Recruitment VALUES (9, 30, '2023-05-06 06:00:00','2023-05-07 06:00:00');
+
+
+INSERT INTO Communications VALUES (4, 1, '2023-05-27 07:00:00', 'Yes');
+INSERT INTO Communications VALUES (4, 2, '2023-07-14 20:00:00', 'Yes');
+INSERT INTO Communications VALUES (4, 3, '2023-08-15 19:00:00', 'No');
+INSERT INTO Communications VALUES (3, 4, '2023-09-22 05:30:00', 'Yes');
+INSERT INTO Communications VALUES (4, 4, '2023-09-21 21:33:00', 'Yes');
+INSERT INTO Communications VALUES (3, 5, '2023-09-21 19:00:00', 'No');
+INSERT INTO Communications VALUES (4, 5, '2023-09-21 18:00:00', 'Yes');
+INSERT INTO Communications VALUES (2, 6, '2023-09-20 17:00:00', 'Yes');
+INSERT INTO Communications VALUES (3, 6, '2023-09-20 18:30:00', 'Yes');
+INSERT INTO Communications VALUES (2, 7, '2023-10-01 07:00:00', 'Yes');
+INSERT INTO Communications VALUES (3, 7, '2023-09-30 15:00:00', 'Yes');
+INSERT INTO Communications VALUES (2, 8, '2023-10-01 15:00:00', 'Yes');
+INSERT INTO Communications VALUES (3, 8, '2023-10-01 15:10:00', 'Yes');
+INSERT INTO Communications VALUES (1, 9, '2023-05-06 07:00:00', 'Yes');
+INSERT INTO Communications VALUES (5, 9, '2023-05-06 06:30:00', 'Yes');
+
+--------------------------------------------------------------------
+-- Check Tables Sections
+--------------------------------------------------------------------
+/*
+SELECT * FROM Staff_Info;
+SELECT * FROM Subjects;
+SELECT * FROM Position;
+SELECT * FROM Qualifications;
+SELECT * FROM Subjects_Position;
+SELECT * FROM Academic_Supervisor;
+SELECT * FROM Requests;
+SELECT * FROM Recruitment;
+SELECT * FROM Express_Recruitment;
+SELECT * FROM Communications;
+*/
+
+
+--------------------------------------------------------------------
+-- Question 3 - part a: List who supervises which casual staff on what jobs
+--------------------------------------------------------------------
+SELECT a_s.AcadName Supervisor, si.StaffName, rt.RequestID, s.SubjectName, rt.DateStart, rt.TeachingDuration, rt.WeeklyHours, rt.Venue, p.PositionType
+FROM Recruitment r, Requests rt, Staff_Info si, Academic_Supervisor a_s, Subjects_Position sp, Subjects s, Position p
+WHERE r.RequestID = rt.RequestID AND
+      r.StaffID = si.StaffID AND
+	  rt.AcadID = a_s.AcadID AND
+	  rt.Subject_PositionID = sp.Subject_PositionID AND
+	  sp.PositionID = p.PositionID AND
+	  sp.SubjectID = s.SubjectID AND
+	  r.Status = 'Accepted';
+
+	 
+
+--------------------------------------------------------------------
+-- Question 3 - part b: For all casual staff, list their expertise, corresponding years of experience and their
+-- self-rating on their competitiveness. Order the output in terms of staff name, self-rating and experience
+--------------------------------------------------------------------
+SELECT DISTINCT(si.StaffName), s.SubjectName, q.YearExperience, q.SelfRateCompetitiveness
+FROM Staff_Info si, Qualifications q, Subjects s
+WHERE q.StaffID = si.StaffID AND
+      q.SubjectID = s.SubjectID
+ORDER BY si.StaffName, q.SelfRateCompetitiveness, q.YearExperience;
+
+
+
+--------------------------------------------------------------------
+-- Question 3 - part c: For a given date, say 22 Oct 2023, List the job details for all jobs that 
+-- have (face-to-face teaching) activities on that day
+--------------------------------------------------------------------
+--For regular Recruitment
+SELECT rt.RequestID, p.PositionType, s.SubjectName, CAST(rt.DateStart AS TIME) StartHour, rt.Venue, rt.Express_Recruitment Request_Status 
+FROM Requests rt, Subjects_Position sp, Position p, Subjects s
+WHERE CAST(rt.DateStart AS DATE) = DATEADD(WEEK, - DATEDIFF(WEEK, CAST(rt.DateStart AS DATE),'2023-10-22'), '2023-10-22') AND
+	  rt.Subject_PositionID = sp.Subject_PositionID AND
+	  sp.PositionID = p.PositionID AND
+	  sp.SubjectID = s.SubjectID AND
+	  rt.Express_Recruitment = 'No';
+
+
+SELECT rt.RequestID, p.PositionType, s.SubjectName, CAST(rt.DateStart AS TIME) StartHour, rt.Venue, rt.Express_Recruitment Request_Status
+FROM Requests rt, Subjects_Position sp, Position p, Subjects s
+WHERE CAST(rt.DateStart AS DATE) = '2023-10-22' AND
+	  rt.Subject_PositionID = sp.Subject_PositionID AND
+	  sp.PositionID = p.PositionID AND
+	  sp.SubjectID = s.SubjectID AND
+	  rt.Express_Recruitment = 'Yes';
+
+
+
+	  
+--------------------------------------------------------------------
+-- Question 3 - part d: For all the casual staff members who got one or more contracts within this recruitment system,
+--list respectively their name, and the total amount of dollars added up from all the contracts for the same individual member
+--------------------------------------------------------------------
+--For regular recruitment:
+SELECT r.StaffID, COUNT(r.Status) total_contracts, SUM(p.PaymentRate) total_money_hour
+FROM Recruitment r, Requests rt, Subjects_Position sp, Position p
+WHERE r.Status = 'Accepted' AND
+      r.RequestID = rt.RequestID AND
+	  rt.Subject_PositionID = sp.Subject_PositionID AND
+	  sp.PositionID = p.PositionID
+GROUP BY r.StaffID;
+
+--For express recruitment:
+SELECT c.StaffID, COUNT(c.AcceptanceStatus) total_express_contracts, SUM(p.PaymentRate) total_express_money_hour
+FROM Communications c, Express_Recruitment er, Requests r, Subjects_Position sp, Position p
+WHERE c.AcceptanceStatus = 'Yes' AND
+      c.ExpressID = er.ExpressID AND
+	  er.RequestID = r.RequestID AND
+	  r.Subject_PositionID = sp.Subject_PositionID AND
+	  sp.PositionID = p.PositionID
+GROUP BY c.StaffID;
+
+
+
+
+
+--------------------------------------------------------------------
+-- Question 3 - part e: List all recruitments that are enlisted (released) on a given date
+-- and their current employment status/details such as who filled which job, the (job) position type, the timeslot, and the venue.
+-- Sort the output in the order of the job type, status on filling the job, and the job's start time.
+--------------------------------------------------------------------
+SELECT r.StaffID, r.Status, r.RequestID, p.PositionType, rt.DateStart, rt.Venue
+FROM Recruitment r, Requests rt, Staff_Info si, Subjects_Position sp, Subjects s, Position p
+WHERE r.StaffID = si.StaffID AND
+      r.RequestID = rt.RequestID AND
+	  rt.Subject_PositionID = sp.Subject_PositionID AND
+	  sp.PositionID = p.PositionID AND
+	  sp.SubjectID = s.SubjectID AND
+	  CAST(rt.DateStart AS DATE) = '2023-05-07'
+ORDER BY p.PositionType, r.Status, rt.DateStart;
+
+
+--For express recruitment, I list all recruitments that are on the same date as for regular recruitment
+SELECT si.StaffID, c.AcceptanceStatus, rt.RequestID, p.PositionType, rt.DateStart, rt.Venue 
+FROM Communications c, Express_Recruitment er, Requests rt, Staff_Info si, Subjects_Position sp, Subjects s, Position p
+WHERE c.StaffID = si.StaffID AND
+      c.ExpressID = er.ExpressID AND
+	  er.RequestID = rt.RequestID AND
+	  rt.Subject_PositionID = sp.Subject_PositionID AND
+	  sp.PositionID = p.PositionID AND
+	  sp.SubjectID = s.SubjectID AND
+	  CAST(rt.DateStart AS DATE) = '2023-05-07'AND
+	  rt.Express_Recruitment = 'Yes'
+ORDER BY p.PositionType, c.AcceptanceStatus, rt.DateStart;
+
+
+
+
+
+-------------------------------------------------------------------------------------------------
+-- This section is used to explain the final part of the assignment 
+-- Question 3. part iii:
+-------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM Recruitment 
+WHERE RequestID = 1;
+
+UPDATE Recruitment 
+SET STAFFID = 2, RequestID = 1, Status = 'Accepted'
+WHERE StaffID = 2 AND
+      RequestID = 1 AND 
+	  Status = 'Declined';
+
+SELECT *
+FROM Recruitment
+WHERE RequestID = 1;
+
+SELECT r.StaffID, r.RequestID, r.Status, s.SubjectName, p.PositionType, rt.TeachingDuration, rt.Venue, rt.WeeklyHours, rt.DateStart
+FROM Recruitment r, Requests rt, Subjects_Position sp, Position p, Subjects s
+WHERE r.RequestID = rt.RequestID AND
+	  rt.Subject_PositionID = sp.Subject_PositionID AND
+	  sp.PositionID = p.PositionID AND
+	  sp.SubjectID = s.SubjectID AND
+	  r.RequestID = 1;
